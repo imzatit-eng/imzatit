@@ -1,0 +1,59 @@
+{
+  "name": "imzatit-sovereign-platform",
+  "version": "1.0.0",
+  "description": "منصة إمزتت السيادية للتسويق الذكي والعملات الرقمية",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "frontend": "cd frontend && npm start",
+    "frontend-build": "cd frontend && npm run build",
+    "ai-bot": "node ai-orchestrator/blue-man-bot.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "deploy": "bash scripts/deploy.sh",
+    "docker-up": "docker-compose up -d",
+    "docker-down": "docker-compose down"
+  },
+  "keywords": [
+    "imzatit",
+    "marketing",
+    "crypto",
+    "automation",
+    "ai",
+    "libya",
+    "tunisia",
+    "saudi"
+  ],
+  "author": "Imzatit Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "web3": "^4.2.1",
+    "node-cron": "^3.0.3",
+    "googleapis": "^128.0.0",
+    "nodemailer": "^6.9.7",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "multer": "^1.4.5-lts.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "rate-limiter-flexible": "^2.4.2",
+    "dotenv": "^16.3.1",
+    "pg": "^8.11.3",
+    "firebase-admin": "^11.11.0",
+    "redis": "^4.6.10",
+    "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "eslint": "^8.53.0",
+    "prettier": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

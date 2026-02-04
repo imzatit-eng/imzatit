@@ -1,0 +1,132 @@
+const OrderService = require('../services/orderService');
+const CryptoService = require('../services/cryptoService');
+const { validationResult } = require('express-validator');
+
+class OrderController {
+  async createOrder(req, res) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          errors: errors.array()
+        });
+      }
+
+      const orderData = req.body;
+      const userId = req.user.id;
+
+      // إنشاء الطلب
+      const order = await OrderService.createOrder(orderData, userId);
+      
+      // إذا كان الطلب لعملة رقمية
+      if (orderData.type === 'crypto_mint') {
+        const mintResult = await CryptoService.mintTokens(
+          orderData.walletAddress,
+          orderData.amount
+        );
+        
+        if (mintResult.success) {
+          order.transactionHash = mintResult.transactionHash;
+          await order.save();
+        }
+      }
+
+      res.status(201).json({
+        success: true,
+        message: 'تم إنشاء الطلب بنجاح',
+        data: order,
+        transactionHash: order.transactionHash
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'حدث خطأ في إنشاء الطلب',
+        error: error.message
+      });
+    }
+  }
+
+  async getOrders(req, res) {
+    try {
+      const userId = req.user.id;
+      const { page = 1, limit = 10, status } = req.query;
+      
+      const orders = await OrderService.getUserOrders(userId, {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        status
+      });
+
+      res.json({
+        success: true,
+        data: orders,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: orders.total
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'حدث خطأ في جلب الطلبات',
+        error: error.message
+      });
+    }
+  }
+
+  async getOrderStatus(req, res) {
+    try {
+      const { orderId } = req.params;
+      const userId = req.user.id;
+      
+      const order = await OrderService.getOrderById(orderId, userId);
+      
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: 'الطلب غير موجود'
+        });
+      }
+
+      res.json({
+        success: true,
+        data: order
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'حدث خطأ في جلب حالة الطلب',
+        error: error.message
+      });
+    }
+  }
+
+  async cancelOrder(req, res) {
+    try {
+      const { orderId } = req.params;
+      const userId = req.user.id;
+      
+      const result = await OrderService.cancelOrder(orderId, userId);
+      
+      if (!result.success) {
+        return res.status(400).json(result);
+      }
+
+      res.json({
+        success: true,
+        message: 'تم إلغاء الطلب بنجاح',
+        data: result.order
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'حدث خطأ في إلغاء الطلب',
+        error: error.message
+      });
+    }
+  }
+}
+
+module.exports = new OrderController();

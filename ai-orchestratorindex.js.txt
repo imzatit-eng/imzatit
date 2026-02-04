@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+console.log(`
+╔══════════════════════════════════════════════════════════╗
+║   🚀 Blue Man Bot - Imzatit AI Orchestrator             ║
+║   Version: 1.0.0 | Status: Initializing                 ║
+╚══════════════════════════════════════════════════════════╝
+`);
+
+const BlueManBot = require('./blue-man-bot');
+const config = require('./config');
+const fs = require('fs');
+
+// التحقق من ملف الخدمة
+if (!fs.existsSync(config.GOOGLE_SERVICE_ACCOUNT_PATH)) {
+  console.error('❌ ملف خدمة جوجل غير موجود!');
+  console.log('📁 يرجى وضع ملف service-account.json في مجلد google-automation');
+  process.exit(1);
+}
+
+// تشغيل البوت
+async function start() {
+  try {
+    const bot = new BlueManBot();
+    await bot.initialize();
+    
+    // الحفاظ على التشغيل
+    process.on('SIGINT', async () => {
+      console.log('\n🛑 إيقاف الرجل الأزرق...');
+      await bot.shutdown();
+      process.exit(0);
+    });
+    
+    process.on('unhandledRejection', (error) => {
+      console.error('❌ خطأ غير معالج:', error);
+    });
+    
+  } catch (error) {
+    console.error('❌ فشل تشغيل البوت:', error);
+    process.exit(1);
+  }
+}
+
+start();

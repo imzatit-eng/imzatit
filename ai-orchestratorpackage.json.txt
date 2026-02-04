@@ -1,0 +1,21 @@
+{
+  "name": "imzatit-ai-orchestrator",
+  "version": "1.0.0",
+  "description": "نظام الرجل الأزرق للأتمتة الذكية",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest",
+    "monitor": "node monitor.js"
+  },
+  "dependencies": {
+    "googleapis": "^128.0.0",
+    "node-cron": "^3.0.3",
+    "axios": "^1.6.0",
+    "nodemailer": "^6.9.7",
+    "web3": "^4.2.1",
+    "cheerio": "^1.0.0-rc.12",
+    "natural": "^6.5.0"
+  }
+}
